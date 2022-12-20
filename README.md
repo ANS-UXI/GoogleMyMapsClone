@@ -7,7 +7,7 @@
 
 The following **required** functionality is completed:
 
-* [ ] Display a list of map titles
+* [x] Display a list of map titles
 * [ ] Allow tapping on a map title to display the associated places in a map
 * [ ] Allow the user to create a new map
 
