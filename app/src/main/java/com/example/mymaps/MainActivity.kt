@@ -1,12 +1,16 @@
 package com.example.mymaps
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View.OnClickListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymaps.model.Place
 import com.example.mymaps.model.UserMap
 
+const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,7 +19,14 @@ class MainActivity : AppCompatActivity() {
         val userMaps = generateSampleData()
         val rvMaps = findViewById<RecyclerView>(R.id.rvMaps)
         rvMaps.layoutManager = LinearLayoutManager(this)
-        rvMaps.adapter = MapsAdapter(this, userMaps)
+        rvMaps.adapter = MapsAdapter(this, userMaps, object: MapsAdapter.OnClickListener {
+            override fun onItemClick(position:Int){
+                Log.i("MainActivity", "Tapped on $position")
+                val intent = Intent(this@MainActivity, DisplayMapActivity::class.java)
+                intent.putExtra(EXTRA_USER_MAP, userMaps[position])
+                startActivity(intent)
+            }
+        })
     }
 
     private fun generateSampleData(): List<UserMap> {
