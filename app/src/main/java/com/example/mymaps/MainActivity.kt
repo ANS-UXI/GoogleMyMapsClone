@@ -1,17 +1,23 @@
 package com.example.mymaps
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View.OnClickListener
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymaps.model.Place
 import com.example.mymaps.model.UserMap
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
+const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
+
+    private val contract = registerForActivityResult(Contract()) {
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,14 +25,21 @@ class MainActivity : AppCompatActivity() {
         val userMaps = generateSampleData()
         val rvMaps = findViewById<RecyclerView>(R.id.rvMaps)
         rvMaps.layoutManager = LinearLayoutManager(this)
-        rvMaps.adapter = MapsAdapter(this, userMaps, object: MapsAdapter.OnClickListener {
-            override fun onItemClick(position:Int){
+        rvMaps.adapter = MapsAdapter(this, userMaps, object : MapsAdapter.OnClickListener {
+            override fun onItemClick(position: Int) {
                 Log.i("MainActivity", "Tapped on $position")
                 val intent = Intent(this@MainActivity, DisplayMapActivity::class.java)
                 intent.putExtra(EXTRA_USER_MAP, userMaps[position])
                 startActivity(intent)
             }
         })
+
+        val fabCreateMap = findViewById<FloatingActionButton>(R.id.fabCreateMap)
+        fabCreateMap.setOnClickListener {
+            contract.launch("NEW MAP", )
+
+        }
+
     }
 
     private fun generateSampleData(): List<UserMap> {
