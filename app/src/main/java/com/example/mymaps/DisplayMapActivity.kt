@@ -1,6 +1,8 @@
 package com.example.mymaps
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mymaps.databinding.ActivityDisplayMapBinding
 import com.example.mymaps.model.UserMap
@@ -30,6 +32,26 @@ class DisplayMapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_display_map, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.miDisplayNormal) {
+            mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
+
+        if (item.itemId == R.id.miDisplayTerrain) {
+            mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        }
+
+        if (item.itemId == R.id.miDisplaySatellite) {
+            mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     /**
