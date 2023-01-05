@@ -21,7 +21,6 @@ The following **extensions** are implemented:
 Here's a video walkthrough of the app:
 
 <p align="center">
-<a href="https://asciinema.org/a/223115">
 <img src="https://github.com/ANS-UXI/GoogleMyMapsClone/app/src/main/res/ezgif.com-gif-maker.gif"/>
 </a>
 </p>
