@@ -20,7 +20,7 @@ The following **extensions** are implemented:
 
 Here's a video walkthrough of the app:
 
-<img src='https://imgur.com/a/sBg5mUj' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+![](https://imgur.com/a/sBg5mUj)
 
 
 
