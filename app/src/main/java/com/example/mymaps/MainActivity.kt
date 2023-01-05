@@ -1,29 +1,42 @@
 package com.example.mymaps
 
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymaps.model.Place
 import com.example.mymaps.model.UserMap
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.*
 
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
-@Suppress("DEPRECATION")
+const val FILENAME = "UserGenerated.data"
 class MainActivity : AppCompatActivity() {
 
-    private val contract = registerForActivityResult(Contract()) {
+    private lateinit var userMaps: MutableList<UserMap>
+    private lateinit var rvMaps: RecyclerView
 
+    private val contract = registerForActivityResult(Contract()) {
+        Log.i("IntoContract", "Received ${it.title}")
+        userMaps.add(it)
+        rvMaps.adapter?.notifyItemInserted(userMaps.size - 1)
+        serializeData(this, userMaps)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val userMaps = generateSampleData()
-        val rvMaps = findViewById<RecyclerView>(R.id.rvMaps)
+        userMaps = deserializeData(this).toMutableList()
+        rvMaps = findViewById<RecyclerView>(R.id.rvMaps)
         rvMaps.layoutManager = LinearLayoutManager(this)
         rvMaps.adapter = MapsAdapter(this, userMaps, object : MapsAdapter.OnClickListener {
             override fun onItemClick(position: Int) {
@@ -31,17 +44,56 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this@MainActivity, DisplayMapActivity::class.java)
                 intent.putExtra(EXTRA_USER_MAP, userMaps[position])
                 startActivity(intent)
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
             }
         })
 
         val fabCreateMap = findViewById<FloatingActionButton>(R.id.fabCreateMap)
         fabCreateMap.setOnClickListener {
-            contract.launch("NEW MAP", )
-
+            showAlertDialog()
         }
-
     }
 
+    private fun showAlertDialog() {
+        val placeFormView = LayoutInflater.from(this).inflate(R.layout.dialog_create_title, null)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Map Title")
+            .setView(placeFormView)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("OK", null)
+            .show()
+
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            val title = placeFormView.findViewById<EditText>(R.id.etTitleForMap).text.toString()
+            if (title.trim().isEmpty()) {
+                Toast.makeText(this, "Map title must be non-empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            dialog.dismiss()
+            contract.launch(title)
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        }
+    }
+
+    private fun serializeData(context: Context, userMaps: List<UserMap>) {
+        ObjectOutputStream(FileOutputStream(getFile(context))).use {
+            it.writeObject(userMaps)
+        }
+    }
+
+    private fun deserializeData(context: Context): List<UserMap> {
+        val file = getFile(context)
+        if (!file.exists()) {
+            return generateSampleData()
+        }
+        ObjectInputStream(FileInputStream(file)).use {
+            return it.readObject() as List<UserMap>
+        }
+    }
+
+    private fun getFile(context: Context): File {
+        return File(context.filesDir, FILENAME)
+    }
     private fun generateSampleData(): List<UserMap> {
         return listOf(
             UserMap(

@@ -1,14 +1,20 @@
 package com.example.mymaps
 
+import android.app.Activity
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.mymaps.databinding.ActivityCreateMapBinding
+import com.example.mymaps.model.Place
+import com.example.mymaps.model.UserMap
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -44,6 +50,39 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_create_map, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.miSave) {
+            if (markers.isEmpty()) {
+                Toast.makeText(this, "You need to drop atleast one marker on the map", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            val places = markers.map { marker -> Place(marker!!.title.toString(), marker!!.snippet.toString(), marker!!.position.latitude, marker!!.position.longitude) }
+            val userMap = UserMap(intent.getStringExtra(EXTRA_MAP_TITLE).toString(), places)
+            val data = Intent()
+            data.putExtra("EXTRA_USER_MAP", userMap)
+            setResult(Activity.RESULT_OK, data)
+            finish()
+            return true
+        }
+        if (item.itemId == R.id.miNormal) {
+            mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
+
+        if (item.itemId == R.id.miTerrain) {
+            mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        }
+
+        if (item.itemId == R.id.miSatellite) {
+            mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -65,16 +104,21 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
             marker.remove()
         }
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val india = LatLng(21.7679, 78.8718)
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(india, 4f))
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun showAlertDialog(latLng: LatLng) {
         val placeFormView = LayoutInflater.from(this).inflate(R.layout.dialog_create_place, null)
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Create a marker")
+            .setTitle("Place deatails")
             .setView(placeFormView)
             .setNegativeButton("Cancel", null)
             .setPositiveButton("OK", null)
