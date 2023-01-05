@@ -20,10 +20,7 @@ The following **extensions** are implemented:
 
 Here's a video walkthrough of the app:
 
-<p align="center">
-<img src="https://github.com/ANS-UXI/GoogleMyMapsClone/app/src/main/res/ezgif.com-gif-maker.gif"/>
-</a>
-</p>
+![Video Walkthrough](https://github.com/ANS-UXI/GoogleMyMapsClone/app/src/main/res/ezgif.com-gif-maker.gif)
 
 
 
