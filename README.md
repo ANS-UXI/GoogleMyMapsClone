@@ -23,6 +23,8 @@ Here's a video walkthrough of the app:
 <img src="https://github.com/ANS-UXI/GoogleMyMapsClone/blob/2aa328516cbe000170c2ef234174a1a850727fb4/app/src/main/res/ezgif.com-gif-maker.gif" width="270" height="550" />
 
 
+[Feel free to download the app and run on your Android Device](https://www.mediafire.com/file/8v8n21d005anf8n/GMyMapsClone.apk/file)
+
 ## Concepts
 
 The following concepts in Android are covered:
